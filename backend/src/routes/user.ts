@@ -35,7 +35,7 @@ userRouter.post('/signup', async (c) =>{
 
 userRouter.post('/signin', async (c) =>{
     const prisma = new PrismaClient({
-        datasourceUrl : c.env?.DATABASE_URL
+        datasourceUrl : c.env.DATABASE_URL
     }).$extends(withAccelerate())
 
 
@@ -44,7 +44,7 @@ userRouter.post('/signin', async (c) =>{
     const user = await prisma.user.findUnique({
         where : {
             email : body.email,
-            password : body.email
+            password : body.password
         }
     })
 
