@@ -7,7 +7,7 @@ import { verify } from 'hono/jwt'
 export const blogRouter = new Hono<{
     Bindings : {
         DATABASE_URL: string,
-        JWT_SCERET : string
+        JWT_SECRET : string
     },
     Variables : {
         userId : string
@@ -15,21 +15,22 @@ export const blogRouter = new Hono<{
 }>()
 
 blogRouter.use('/*', async (c,next) =>{
-    const authHeader = c.req.header('Authorization') || ""
+    const authHeader = c.req.header('authorization') || ""
     
-    const user =  await verify(authHeader, c.env.JWT_SCERET)
+    
+        const user =  await verify(authHeader, c.env.JWT_SECRET)
 
-    console.log("verified token",user)
+        console.log("verified token",user)
         
-    if(user){
-        c.set("userId",user.id)
-        await next()
-    } else {
-        c.status(403)
-        return c.json({
-            message : "You are not logged in"
-        })
-    }
+        if(user){
+            c.set("userId",user.id)
+            await next()
+        } else {
+            c.status(403)
+            return c.json({
+                message : "You are not logged in"
+            })
+        }
     
 })
 
@@ -77,9 +78,21 @@ blogRouter.put('/',async (c) =>{
     })
 })
 
-blogRouter.get('/' ,async(c)=>{
+blogRouter.get('/bulk', async(c) =>{
+    const prisma = new PrismaClient({
+        datasourceUrl : c.env.DATABASE_URL
+    }).$extends(withAccelerate())
 
-    const userId = c.get('userId')
+    const blog = await prisma.post.findMany()
+
+    return c.json({
+        blog
+    })
+})
+
+blogRouter.get('/:id' ,async(c)=>{
+
+    const id = c.req.param("id")
     const prisma = new PrismaClient({
         datasourceUrl : c.env?.DATABASE_URL
     }).$extends(withAccelerate())
@@ -88,7 +101,7 @@ blogRouter.get('/' ,async(c)=>{
     try{
         const post = await prisma.post.findFirst({
             where:{
-                id : body.id
+                id : id
             }
         })
     
