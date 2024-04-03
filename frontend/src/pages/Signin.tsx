@@ -1,12 +1,53 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
+import Quote from "../components/Quote";
+
+interface SignIn {
+  email: string;
+  password: string;
+}
 
 function Signin() {
-    return (
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [validUser, setValidUser] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignIn = async () => {
+    try {
+      const requestData: SignIn = {
+        email,
+        password,
+      };
+
+      const response = await axios.post(
+        "https://backend.utkarsh172002srivastava.workers.dev/api/v1/user/signin",
+        requestData
+      );
+      const token = response.data.token;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        setValidUser(true);
+        navigate("/blog");
+      } else {
+        setValidUser(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-2">
       <div className="flex justify-center items-center h-screen">
         <div className="w-96 p-8 bg-white rounded-lg mx-auto">
-          <div className="font-bold text-3xl mb-4 flex items-center justify-center">Sign In</div>
+          <div className="font-bold text-3xl mb-4 flex items-center justify-center">
+            Sign In
+          </div>
           <div className="text-xl text-gray-500 mb-8 flex items-center justify-center">
-            Don't have an account?  <Link to = {"/signup"}>Signup</Link>
+            Don't have an account? <Link to={"/signup"}>Signup</Link>
           </div>
           <div className="mb-4">
             <label htmlFor="email" className="font-bold text-lg block">
@@ -17,6 +58,7 @@ function Signin() {
               type="text"
               placeholder="example@example.com"
               className="w-full border border-gray-300 rounded px-4 py-2"
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -28,17 +70,27 @@ function Signin() {
               type="password"
               placeholder="Password"
               className="w-full border border-gray-300 rounded px-4 py-2"
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div>
-            <button className="bg-black text-white font-bold py-2 px-4 rounded w-full">
+            <button
+              className="bg-black text-white font-bold py-2 px-4 rounded w-full"
+              onClick={handleSignIn}
+            >
               Sign In
             </button>
           </div>
+          {validUser ? (
+            <div className="text-green-500 mt-4">User is valid!</div>
+          ) : (
+            <div className="text-red-500 mt-4">User is not valid!</div>
+          )}
         </div>
       </div>
-    );
-  }
-  
-  export default Signin;
-  
+      <Quote />
+    </div>
+  );
+}
+
+export default Signin;

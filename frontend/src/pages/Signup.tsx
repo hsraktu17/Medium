@@ -1,7 +1,48 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Quote from "../components/Quote";
+import { useState } from "react";
+import axios, { AxiosError } from "axios";
+
+interface SignUpData{
+  email : string,
+  name : string,
+  password : string
+}
 
 function Signup() {
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [validUser, setValidUser] = useState(false)
+  const navigate = useNavigate()
+
+  const handleSignUP = async () =>{
+    try{
+      const requestData : SignUpData ={
+        name,
+        email,
+        password
+      }
+
+      const response = await axios.post('https://backend.utkarsh172002srivastava.workers.dev/api/v1/user/signup',requestData)
+      const token = response.data.token
+      if(token){
+        localStorage.setItem("token" ,token)
+        navigate('/blog')
+        setValidUser(true)
+      }else{
+        setValidUser(false)
+      }
+    }catch(error){
+      console.error("Signup error:", error);
+      if ((error as AxiosError).response?.status === 400) {
+          console.error("error found", error)
+      } else {
+          console.error("error found", error)
+      } 
+    }
+  }
+
   return (
     <div className="grid grid-cols-2 h-screen">
       <div className="flex justify-center items-center ">
@@ -20,6 +61,7 @@ function Signup() {
               type="text"
               placeholder="Enter your username"
               className="w-full border border-gray-300 rounded px-4 py-2"
+              onChange={e => setName(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -27,10 +69,11 @@ function Signup() {
               Email
             </label>
             <input
-              id="username"
+              id="email"
               type="text"
               placeholder="m@example.com"
               className="w-full border border-gray-300 rounded px-4 py-2"
+              onChange={e => setEmail(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -42,10 +85,11 @@ function Signup() {
               type="password"
               placeholder="password"
               className="w-full border border-gray-300 rounded px-4 py-2"
+              onChange={e => setPassword(e.target.value)}
             />
           </div>
           <div>
-            <button className="bg-black text-white font-bold py-2 px-4 rounded w-full">
+            <button className="bg-black text-white font-bold py-2 px-4 rounded w-full" onClick={handleSignUP}>
               Sign Up
             </button>
           </div>
