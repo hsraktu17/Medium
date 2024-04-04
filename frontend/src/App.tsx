@@ -4,6 +4,7 @@ import Signup from "./pages/Signup";
 import { Publish } from "./pages/Publish";
 import Blog from "./pages/Blog";
 import {Blogs} from "./pages/Blogs";
+import Redirect from "./components/Redirect";
 
 function App(){
   return <div>
@@ -14,6 +15,7 @@ function App(){
         <Route path = '/blog/:id' element = {<Blog/>} />
         <Route path = '/blogs' element = {<Blogs/>} />
         <Route path = '/publish' element = {<Publish/>} />
+        <Route path="/" element={<Redirect to="/signin" />} />
       </Routes>
     </BrowserRouter>
   </div>
