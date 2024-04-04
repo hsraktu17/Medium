@@ -93,6 +93,11 @@ function Signup() {
             <button className="bg-black text-white font-bold py-2 px-4 rounded w-full" onClick={handleSignUP}>
               Sign Up
             </button>
+            {validUser && (
+            <div className="text-green-500 font-bold mb-4">
+              Signup successful!
+            </div>
+          )}
           </div>
         </div>
       </div>
