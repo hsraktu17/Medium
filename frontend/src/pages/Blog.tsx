@@ -1,29 +1,32 @@
-import { Appbar } from "../components/Appbar";
-import { FullBlog } from "../components/FullBlog";
-import { Spinner } from "../components/Spinner";
+import { useParams } from "react-router-dom";
+import { BlogSkeleton } from "../components/BlogSkeleton";
 import { useBlog } from "../hooks";
-import {useParams} from "react-router-dom";
+import { FullBlog } from "../components/FullBlog";
+import { Appbar } from "../components/Appbar";
 
-// atomFamilies/selectorFamilies
-export const Blog = () => {
+export default function Blog() {
     const { id } = useParams();
-    const {loading, blog} = useBlog({
-        id: id || ""
-    });
+    const { loading, blog } = useBlog({ id: id || "" });
 
-    if (loading || !blog) {
-        return <div>
-            <Appbar />
-        
-            <div className="h-screen flex flex-col justify-center">
-                
-                <div className="flex justify-center">
-                    <Spinner />
-                </div>
+    if (loading) {
+        return (
+            <div>
+                <Appbar />
+                <BlogSkeleton />
+                <BlogSkeleton />
+                <BlogSkeleton />
+                <BlogSkeleton />
             </div>
-        </div>
+        );
     }
-    return <div>
-        <FullBlog blog={blog} />
-    </div>
+
+    if (!blog) {
+        return <div>No blog found</div>; // or any other error handling mechanism
+    }
+
+    return (
+        <div>
+            <FullBlog userBLog={blog} />
+        </div>
+    );
 }

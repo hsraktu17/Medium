@@ -25,10 +25,11 @@ function Signup() {
       }
 
       const response = await axios.post('https://backend.utkarsh172002srivastava.workers.dev/api/v1/user/signup',requestData)
-      const token = response.data.token
+      const token = response.data.jwt
+      console.log("Sign-in response:", response);
       if(token){
         localStorage.setItem("token" ,token)
-        navigate('/blog')
+        navigate('/blogs')
         setValidUser(true)
       }else{
         setValidUser(false)

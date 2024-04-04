@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import axios from "axios";
 import Quote from "../components/Quote";
 
@@ -20,22 +20,30 @@ function Signin() {
         email,
         password,
       };
-
+  
       const response = await axios.post(
         "https://backend.utkarsh172002srivastava.workers.dev/api/v1/user/signin",
         requestData
       );
-      const token = response.data.token;
-
+      
+      console.log("Sign-in response:", response); // Log the response from the backend
+  
+      const token = response.data.jwtSignin;
+  
       if (token) {
-        localStorage.setItem("token", token);
-        setValidUser(true);
-        navigate("/blog");
+        try {
+          localStorage.setItem("token", token);
+          console.log("Token:", token); 
+          navigate("/blogs");
+          setValidUser(true);
+        } catch (error) {
+          console.error("LocalStorage Error:", error);
+        }
       } else {
         setValidUser(false);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Sign-in Error:", error);
     }
   };
 

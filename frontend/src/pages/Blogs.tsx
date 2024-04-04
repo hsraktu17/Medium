@@ -6,31 +6,36 @@ import { useBlogs } from "../hooks";
 export const Blogs = () => {
     const { loading, blogs } = useBlogs();
 
+    if (loading) {
+        return (
+            <div>
+                <Appbar />
+                <div className="flex flex-col items-center"> {/* Wrap the skeleton components in a flex container */}
+                    <BlogSkeleton />
+                    <BlogSkeleton />
+                    <BlogSkeleton />
+                    <BlogSkeleton />
+                    <BlogSkeleton />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div>
-            <Appbar /> 
+            <Appbar/>
             <div className="flex justify-center">
-                <div>
-                    {loading ? (
-                        <>
-                            <BlogSkeleton />
-                            <BlogSkeleton />
-                            <BlogSkeleton />
-                            <BlogSkeleton />
-                            <BlogSkeleton />
-                        </>
-                    ) : (
-                        blogs.map(blog => (
-                            <BlogCard
-                                key={blog.id} // Assuming blog.id is unique
-                                id={blog.id} //this is string
-                                authorName={blog.author?.name || "Anonymous"} // Use optional chaining to avoid errors if author is not available
-                                title={blog.title}
-                                content={blog.content}
-                                publishedDate={"2nd Feb 2024"}
-                            />
-                        ))
-                    )}
+                <div className="max-w-xl">
+                    {blogs.map((blog: { id: string; author: { name: any; }; title: string; content: string; }) => (
+                        <BlogCard 
+                            key={blog.id} 
+                            authorName={blog.author.name || ""}
+                            title={blog.title}
+                            content={blog.content}
+                            publishedDate="2-mar-2002"
+                            id={blog.id}
+                        />
+                    ))}
                 </div>
             </div>
         </div>
